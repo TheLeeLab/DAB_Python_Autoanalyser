@@ -22,7 +22,7 @@ from skimage.color import (
 )
 from skimage.morphology import reconstruction
 from skimage.filters import threshold_otsu
-import pandas as pd
+import polars as pl
 import matplotlib.pyplot as plt
 
 
@@ -278,13 +278,13 @@ class DAB:
                 ),
             )
 
-            table_asyn = pd.DataFrame(props_asyn)
-            table_asyn["pseudo_circularity"] = self.pseudo_circularity(
+            table_asyn = pl.DataFrame(props_asyn)
+            table_asyn = table_asyn.with_columns(pseudo_circularity = self.pseudo_circularity(
                 props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
-            )
-            table_asyn["filename"] = np.full_like(
+            ))
+            table_asyn = table_asyn.with_columns(filename = np.full_like(
                 props_asyn["axis_minor_length"], str(key), dtype="object"
-            )
+            ))
             yield key, image_mask_asyn[key], table_asyn
 
     def analyse_DAB(self, img, filename):
