@@ -279,12 +279,16 @@ class DAB:
             )
 
             table_asyn = pl.DataFrame(props_asyn)
-            table_asyn = table_asyn.with_columns(pseudo_circularity = self.pseudo_circularity(
-                props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
-            ))
-            table_asyn = table_asyn.with_columns(filename = np.full_like(
-                props_asyn["axis_minor_length"], str(key), dtype="object"
-            ))
+            table_asyn = table_asyn.with_columns(
+                pseudo_circularity=self.pseudo_circularity(
+                    props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
+                )
+            )
+            table_asyn = table_asyn.with_columns(
+                filename=np.full_like(
+                    props_asyn["axis_minor_length"], str(key), dtype="object"
+                )
+            )
             yield key, image_mask_asyn[key], table_asyn
 
     def analyse_DAB(self, img, filename):
@@ -321,12 +325,16 @@ class DAB:
             properties=("area", "centroid", "axis_major_length", "axis_minor_length"),
         )
 
-        table_asyn = pd.DataFrame(props_asyn)
-        table_asyn["pseudo_circularity"] = self.pseudo_circularity(
-            props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
+        table_asyn = pl.DataFrame(props_asyn)
+        table_asyn = table_asyn.with_columns(
+            pseudo_circularity=self.pseudo_circularity(
+                props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
+            )
         )
-        table_asyn["filename"] = np.full_like(
-            props_asyn["axis_minor_length"], filename, dtype="object"
+        table_asyn = table_asyn.with_columns(
+            filename=np.full_like(
+                props_asyn["axis_minor_length"], filename, dtype="object"
+            )
         )
 
         return image_mask_asyn, table_asyn, thresh
@@ -389,12 +397,16 @@ class DAB:
             properties=("area", "centroid", "axis_major_length", "axis_minor_length"),
         )
 
-        table_asyn = pd.DataFrame(props_asyn)
-        table_asyn["pseudo_circularity"] = self.pseudo_circularity(
-            props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
+        table_asyn = pl.DataFrame(props_asyn)
+        table_asyn = table_asyn.with_columns(
+            pseudo_circularity=self.pseudo_circularity(
+                props_asyn["axis_major_length"], props_asyn["axis_minor_length"]
+            )
         )
-        table_asyn["filename"] = np.full_like(
-            props_asyn["axis_minor_length"], filename, dtype="object"
+        table_asyn = table_asyn.with_columns(
+            filename=np.full_like(
+                props_asyn["axis_minor_length"], filename, dtype="object"
+            )
         )
 
         label_img_nucl = label(image_mask_nuclei)
@@ -402,9 +414,11 @@ class DAB:
             label_img_nucl,
             properties=("area", "centroid", "axis_major_length", "axis_minor_length"),
         )
-        table_nuclei = pd.DataFrame(props_nuclei)
-        table_nuclei["pseudo_circularity"] = self.pseudo_circularity(
-            props_nuclei["axis_major_length"], props_nuclei["axis_minor_length"]
+        table_nuclei = pl.DataFrame(props_nuclei)
+        table_nuclei = table_nuclei.with_columns(
+            pseudo_circularity=self.pseudo_circularity(
+                props_nuclei["axis_major_length"], props_nuclei["axis_minor_length"]
+            )
         )
         return (
             image_mask_asyn,
