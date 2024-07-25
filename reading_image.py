@@ -75,7 +75,7 @@ for polygon in exterior_polys:
             print('x_cor: ', x_cor, 'end_x_cor: ', end_x_cor, 'y_cor: ', y_cor, 'end_y_cor: ', end_y_cor)
             img = scene.read_block((x_cor, y_cor, multi_tiff_pixel_size, multi_tiff_pixel_size))
             print('img shape: ', img.shape)
-            tiff_path = f'image{x_cor}_{y_cor}.tiff'  # Update this with your desired output path
+            tiff_path = f'data_SH/image{x_cor}_{y_cor}.tiff'  # Update this with your desired output path
             img_pil = Image.fromarray(img)
             img_pil.save(tiff_path, format='TIFF')
             ### create corrdinate for each multi-tiff
@@ -93,6 +93,6 @@ for polygon in exterior_polys:
             mask_total = np.reshape(mask_total, (multi_tiff_pixel_size, multi_tiff_pixel_size))
             mask_total = np.repeat(mask_total[:, :, np.newaxis], 3, axis=2)
             new_image = mask_total*img
-            new_image_path = f'masked_image{x_cor}_{y_cor}.tiff'
+            new_image_path = f'data_SH/masked_image{x_cor}_{y_cor}.tiff'
             img_pil = Image.fromarray(new_image)
             img_pil.save(new_image_path, format='TIFF')
