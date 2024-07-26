@@ -14,7 +14,7 @@ print('pixel numbers: ',scene.rect)
 raw_string = slide.raw_metadata
 print('slide metadata: ',raw_string)
 ### Set the multi-tiff size in pixel
-multi_tiff_pixel_size = 4000
+multi_tiff_pixel_size = 2000
 
 def get_identical_element_indices(arr):
     indices = []
