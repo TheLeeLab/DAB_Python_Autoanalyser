@@ -105,14 +105,16 @@ class IO_Functions:
         k = 0
         l = 0
         maxval = 0
+
         for polygon in exterior_polys:
             coords_array = np.array(polygon.exterior.coords)
             min_x = int(np.min(coords_array[:, 0]))
             min_y = int(np.min(coords_array[:, 1]))
             max_x = int(np.max(coords_array[:, 0]))
             max_y = int(np.max(coords_array[:, 1]))
-            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size))
-            maxval += len(np.arange(min_y, max_y, multi_tiff_pixel_size))
+            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size)) * len(
+                np.arange(min_y, max_y, multi_tiff_pixel_size)
+            )
 
         for polygon in exterior_polys:
 
@@ -144,8 +146,9 @@ class IO_Functions:
                     x_grid, y_grid = np.meshgrid(x_cor_list, y_cor_list)
                     corr = np.vstack([x_grid.ravel(), y_grid.ravel()]).T
                     mask_total = np.zeros_like(corr[:, 0], dtype=bool)
-                    for i in np.arange(len(exterior_polys)):
-                        mask = polygon_paths[i].contains_points(corr)
+                    for polygon in exterior_polys:
+                        polygon_path = mpl_path.Path(polygon.exterior.coords)
+                        mask = polygon_path.contains_points(corr)
                         mask_total = np.logical_or(mask_total, mask)
                     mask_total = np.reshape(
                         mask_total, (multi_tiff_pixel_size, multi_tiff_pixel_size)
@@ -168,22 +171,28 @@ class IO_Functions:
                             new_image_path, format="TIFF", tiffinfo=tags_tosave
                         )
 
-                        new_image_path = os.path.join(
+                        mask_image_path = os.path.join(
                             temp_directory, f"image_mask_{x_cor}_{y_cor}.tiff"
                         )
-                        img_pil = Image.fromarray(mask_total)
-                        tags_tosave = copy(self.example_tags)
-                        tags_tosave[296] = 3
-                        tags_tosave[262] = 1
-                        tags_tosave[282] = 1e-3 / pixel_size
-                        tags_tosave[283] = 1e-3 / pixel_size
-                        tags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
-                        tags_tosave[256] = img_pil.width
-                        tags_tosave[257] = img_pil.height
-                        tags_tosave[278] = img_pil.height
-                        tags_tosave[279] = img_pil.height * img_pil.width
-                        img_pil.save(
-                            new_image_path, format="TIFF", tiffinfo=tags_tosave
+                        mask_pil = Image.fromarray(mask_total)
+                        masktags_tosave = copy(self.example_tags)
+                        masktags_tosave[296] = 3
+                        del masktags_tosave[258]
+                        masktags_tosave[259] = 1
+                        masktags_tosave[262] = 1
+                        del masktags_tosave[273]
+                        del masktags_tosave[50838]
+                        del masktags_tosave[50839]
+                        masktags_tosave[282] = 1e-3 / pixel_size
+                        masktags_tosave[283] = 1e-3 / pixel_size
+                        masktags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
+                        masktags_tosave[277] = 1
+                        del masktags_tosave[256]
+                        del masktags_tosave[257]
+                        del masktags_tosave[278]
+                        del masktags_tosave[279]
+                        mask_pil.save(
+                            mask_image_path, format="TIFF", tiffinfo=masktags_tosave
                         )
                     l += 1
                     print(
