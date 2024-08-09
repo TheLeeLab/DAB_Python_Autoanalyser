@@ -28,7 +28,7 @@ class IO_Functions:
         tiff = Image.open("src/.example.ome.tif")
         self.example_tags = tiff.tag_v2
         return
-    
+
     def imread(self, file_path):
         """
         Read a TIFF file using the skimage library.
@@ -123,8 +123,8 @@ class IO_Functions:
             min_y = int(np.min(coords_array[:, 1]))
             max_x = int(np.max(coords_array[:, 0]))
             max_y = int(np.max(coords_array[:, 1]))
-            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size)) * (len(
-                np.arange(min_y, max_y, multi_tiff_pixel_size)) +1
+            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size)) * (
+                len(np.arange(min_y, max_y, multi_tiff_pixel_size)) + 1
             )
         maxval += 1
         for polygon in exterior_polys:
