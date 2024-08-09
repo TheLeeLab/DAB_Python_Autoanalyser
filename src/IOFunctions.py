@@ -6,12 +6,12 @@ jsb92, 2024/01/02
 import os
 import numpy as np
 import polars as pl
-
+from skimage import io
 import slideio
 import re
 from shapely.geometry import Polygon
+import rasterio.features
 from PIL import Image
-import matplotlib.path as mpl_path
 import time
 from copy import copy
 
@@ -28,6 +28,21 @@ class IO_Functions:
         tiff = Image.open("src/.example.ome.tif")
         self.example_tags = tiff.tag_v2
         return
+    
+    def imread(self, file_path):
+        """
+        Read a TIFF file using the skimage library.
+
+        Args:
+            file_path (str): The path to the TIFF file to be read.
+
+        Returns:
+            image (numpy.ndarray): The image data from the TIFF file.
+        """
+        # Use skimage's imread function to read the TIFF file
+        # specifying the 'tifffile' plugin explicitly
+        image = io.imread(file_path, plugin="tifffile")
+        return image
 
     def chop_svs_file(
         self,
@@ -97,10 +112,6 @@ class IO_Functions:
 
         start = time.time()
 
-        polygon_paths = {}
-        for i, polygon in enumerate(exterior_polys):
-            polygon_paths[i] = mpl_path.Path(polygon.exterior.coords)
-
         j = 0
         k = 0
         l = 0
@@ -112,10 +123,10 @@ class IO_Functions:
             min_y = int(np.min(coords_array[:, 1]))
             max_x = int(np.max(coords_array[:, 0]))
             max_y = int(np.max(coords_array[:, 1]))
-            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size)) * len(
-                np.arange(min_y, max_y, multi_tiff_pixel_size)
+            maxval += len(np.arange(min_x, max_x, multi_tiff_pixel_size)) * (len(
+                np.arange(min_y, max_y, multi_tiff_pixel_size)) +1
             )
-
+        maxval += 1
         for polygon in exterior_polys:
 
             coords_array = np.array(polygon.exterior.coords)
@@ -127,32 +138,20 @@ class IO_Functions:
             yrange = np.arange(min_y, max_y, multi_tiff_pixel_size)
 
             for x_cor in xrange:
-                end_x_cor = min(x_cor + multi_tiff_pixel_size, max_x)
                 for y_cor in yrange:
-                    end_y_cor = min(y_cor + multi_tiff_pixel_size, max_y)
                     img = scene.read_block(
                         (x_cor, y_cor, multi_tiff_pixel_size, multi_tiff_pixel_size)
                     )
 
-                    ### create corrdinate for each multi-tiff
-                    x_cor_list = np.linspace(
-                        x_cor, end_x_cor - 1, multi_tiff_pixel_size
-                    )
-                    y_cor_list = np.linspace(
-                        y_cor, end_y_cor - 1, multi_tiff_pixel_size
-                    )
-
                     # Create a grid of coordinates using meshgrid and reshape the result
-                    x_grid, y_grid = np.meshgrid(x_cor_list, y_cor_list)
-                    corr = np.vstack([x_grid.ravel(), y_grid.ravel()]).T
-                    mask_total = np.zeros_like(corr[:, 0], dtype=bool)
+                    mask_total = np.zeros_like(img[:, :, 0])
                     for polygon in exterior_polys:
-                        polygon_path = mpl_path.Path(polygon.exterior.coords)
-                        mask = polygon_path.contains_points(corr)
-                        mask_total = np.logical_or(mask_total, mask)
-                    mask_total = np.reshape(
-                        mask_total, (multi_tiff_pixel_size, multi_tiff_pixel_size)
-                    )
+                        mask_total += rasterio.features.rasterize(
+                            [polygon],
+                            out_shape=mask_total.shape,
+                            transform=(1, 0.0, x_cor, 0.0, 1, y_cor - 1),
+                        )
+                    mask_total = np.asarray(mask_total, dtype=bool)
                     if np.nansum(mask_total.ravel()) > 0:
                         new_image_path = os.path.join(
                             temp_directory, f"image_{x_cor}_{y_cor}.tiff"
@@ -196,14 +195,15 @@ class IO_Functions:
                         )
                     l += 1
                     print(
-                        "Iterating over sliced DAB   subsection {}/{}   Time elapsed: {:.3f} s".format(
+                        "Chopping DAB into tiff sections;  subsection {}/{}   Time elapsed: {:.2f} seconds".format(
                             j + k + l,
                             maxval,
-                            time.time() - start,
+                            (time.time() - start),
                         ),
                         end="\r",
                         flush=True,
                     )
                 k += 1
             j += 1
+        os.system('cls' if os.name == 'nt' else "printf '\033c'")
         return
