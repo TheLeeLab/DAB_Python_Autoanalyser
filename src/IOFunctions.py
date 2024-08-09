@@ -205,5 +205,4 @@ class IO_Functions:
                     )
                 k += 1
             j += 1
-        os.system('cls' if os.name == 'nt' else "printf '\033c'")
         return

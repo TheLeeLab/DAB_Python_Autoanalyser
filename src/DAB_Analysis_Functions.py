@@ -88,6 +88,7 @@ class DAB:
         svs_files = self.file_search(
             overall_directory, imtype
         )  # first get all files in any subfolders
+        ws = ' '
 
         for file in svs_files:
             slice_name = os.path.split(file.split(".svs")[0])[-1]
@@ -97,6 +98,8 @@ class DAB:
                 multi_tiff_pixel_size=multi_tiff_pixel_size,
                 pixel_size=pixel_size,
             )
+            print(ws*80, end="\r", flush=True,)
+
             folder = os.path.split(file)[0]
             temp_folder = os.path.join(folder, "temp")
             tiffs = self.file_search(temp_folder, ".tiff")
@@ -141,8 +144,7 @@ class DAB:
                     end="\r",
                     flush=True,
                 )
-                
-            os.system('cls' if os.name == 'nt' else "printf '\033c'")
+            print(ws*80, end="\r", flush=True,)
             thresh_asyn = np.percentile(thresh_asyn_variance, percentile)
             thresh_nuclei = np.percentile(thresh_nuclei_variance, percentile)
 
@@ -218,9 +220,7 @@ class DAB:
                     end="\r",
                     flush=True,
                 )
-                
-            os.system('cls' if os.name == 'nt' else "printf '\033c'")
-
+            print(ws*80, end="\r", flush=True,)
             savename_asyn = os.path.join(
                 folder,
                 slice_name
