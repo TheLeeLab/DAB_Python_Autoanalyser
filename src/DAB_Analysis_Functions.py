@@ -231,7 +231,7 @@ class DAB:
                 )
                 table_nuclei_temp = table_nuclei_temp.replace_column(0, xnc)
                 table_nuclei_temp = table_nuclei_temp.replace_column(1, ync)
-
+                
                 if save_figs == True:
                     import matplotlib
 
@@ -261,7 +261,7 @@ class DAB:
                     table_nuclei = table_nuclei_temp
                 else:
                     table_asyn = pl.concat(
-                        [table_asyn, table_nuclei_temp], rechunk=True
+                        [table_asyn, table_asyn_temp], rechunk=True
                     )
                     table_nuclei = pl.concat(
                         [table_nuclei, table_nuclei_temp], rechunk=True
