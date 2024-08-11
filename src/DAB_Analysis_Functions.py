@@ -113,7 +113,7 @@ class DAB:
 
             folder = os.path.split(file)[0]
             temp_folder = os.path.join(folder, "temp")
-            
+
             if save_figs == True:
                 fig_folder = os.path.join(folder, "figures")
                 if not os.path.isdir(fig_folder):
@@ -231,7 +231,7 @@ class DAB:
                 )
                 table_nuclei_temp = table_nuclei_temp.replace_column(0, xnc)
                 table_nuclei_temp = table_nuclei_temp.replace_column(1, ync)
-                
+
                 if save_figs == True:
                     import matplotlib
 
@@ -260,9 +260,7 @@ class DAB:
                     table_asyn = table_asyn_temp
                     table_nuclei = table_nuclei_temp
                 else:
-                    table_asyn = pl.concat(
-                        [table_asyn, table_asyn_temp], rechunk=True
-                    )
+                    table_asyn = pl.concat([table_asyn, table_asyn_temp], rechunk=True)
                     table_nuclei = pl.concat(
                         [table_nuclei, table_nuclei_temp], rechunk=True
                     )
