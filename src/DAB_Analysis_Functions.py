@@ -106,7 +106,7 @@ class DAB:
                 pixel_size=pixel_size,
             )
             print(
-                ws * 80,
+                ws * 100,
                 end="\r",
                 flush=True,
             )
@@ -162,7 +162,7 @@ class DAB:
                     flush=True,
                 )
             print(
-                ws * 80,
+                ws * 100,
                 end="\r",
                 flush=True,
             )
@@ -277,7 +277,7 @@ class DAB:
                     flush=True,
                 )
             print(
-                ws * 80,
+                ws * 100,
                 end="\r",
                 flush=True,
             )
