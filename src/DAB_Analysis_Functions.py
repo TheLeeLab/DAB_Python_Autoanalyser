@@ -74,6 +74,7 @@ class DAB:
         n_samples_forthresh=50,
         percentile=90,
         giveNN=False,
+        save_figs=False,
     ):
         """chop_and_analyse_svs function finds svs files,
         chops them up, analyses them, and then deletes the chopped files
@@ -82,8 +83,14 @@ class DAB:
             overall_directory (string): directory to search for svs files in sub-directories
             multi_tiff_pixel_size (int): size of images to chop to
             pixel_size (float): pixel size in m
+            NA (float): NA of objective used to generate data
             n_samples_forthresh (int): number of randomly chosen tiffs to use
                             to determine thresholds for overall sample set
+            percentile (float): percentile of thresholds to use for overall data
+            giveNN (boolean): If true, also calculates Nearest Neighbors.
+                                Default False, as this is quite slow.
+            save_figs (boolean): If True, saves figures showing the segmentation
+                                for each image. Useful as a "sanity check"
         """
         svs_files = self.file_search(
             overall_directory, imtype
@@ -106,6 +113,12 @@ class DAB:
 
             folder = os.path.split(file)[0]
             temp_folder = os.path.join(folder, "temp")
+            
+            if save_figs == True:
+                fig_folder = os.path.join(folder, "figures")
+                if not os.path.isdir(fig_folder):
+                    os.mkdir(fig_folder)
+
             tiffs = self.file_search(temp_folder, ".tiff")
             tiffs = np.sort([e for e in tiffs if "mask" not in e])
 
@@ -185,9 +198,9 @@ class DAB:
                 mask = IO.imread(maskname)
                 (
                     image_mask_asyn,
-                    table_asyn,
+                    table_asyn_temp,
                     image_mask_nuclei,
-                    table_nuclei,
+                    table_nuclei_temp,
                     thresh,
                     thresh_nuclei,
                 ) = self.analyse_DAB_and_cells(
@@ -201,23 +214,58 @@ class DAB:
                     pixel_size=pixel_size_um,
                 )
 
-                xc = pl.Series("centroid-x", table_asyn["centroid-0"].to_numpy() + xpos)
-                yc = pl.Series("centroid-y", table_asyn["centroid-1"].to_numpy() + ypos)
-                table_asyn = table_asyn.replace_column(0, xc)
-                table_asyn = table_asyn.replace_column(1, yc)
+                xc = pl.Series(
+                    "centroid-x", table_asyn_temp["centroid-0"].to_numpy() + xpos
+                )
+                yc = pl.Series(
+                    "centroid-y", table_asyn_temp["centroid-1"].to_numpy() + ypos
+                )
+                table_asyn_temp = table_asyn_temp.replace_column(0, xc)
+                table_asyn_temp = table_asyn_temp.replace_column(1, yc)
 
                 xnc = pl.Series(
-                    "centroid-x", table_nuclei["centroid-0"].to_numpy() + xpos
+                    "centroid-x", table_nuclei_temp["centroid-0"].to_numpy() + xpos
                 )
                 ync = pl.Series(
-                    "centroid-y", table_nuclei["centroid-1"].to_numpy() + ypos
+                    "centroid-y", table_nuclei_temp["centroid-1"].to_numpy() + ypos
                 )
-                table_nuclei = table_nuclei.replace_column(0, xnc)
-                table_nuclei = table_nuclei.replace_column(1, ync)
+                table_nuclei_temp = table_nuclei_temp.replace_column(0, xnc)
+                table_nuclei_temp = table_nuclei_temp.replace_column(1, ync)
 
-                if i != 0:
-                    table_asyn = pl.concat([table_asyn, table_asyn], rechunk=True)
-                    table_nuclei = pl.concat([table_nuclei, table_nuclei], rechunk=True)
+                if save_figs == True:
+                    import matplotlib
+
+                    matplotlib.use("Agg")
+                    fig, axs = self.plot_masks(
+                        IO.imread(tiffs[i]),
+                        np.dstack([image_mask_asyn, image_mask_nuclei]),
+                    )
+                    figname = (
+                        str(int(os.path.split(tiffs[i])[-1].split("_")[1]))
+                        + "_"
+                        + str(
+                            int(
+                                os.path.split(tiffs[i])[-1]
+                                .split("_")[-1]
+                                .split(".tiff")[0]
+                            )
+                        )
+                        + "_segmentation_example.svg"
+                    )
+                    plt.savefig(
+                        os.path.join(fig_folder, figname), format="svg", dpi=600
+                    )
+
+                if i == 0:
+                    table_asyn = table_asyn_temp
+                    table_nuclei = table_nuclei_temp
+                else:
+                    table_asyn = pl.concat(
+                        [table_asyn, table_nuclei_temp], rechunk=True
+                    )
+                    table_nuclei = pl.concat(
+                        [table_nuclei, table_nuclei_temp], rechunk=True
+                    )
 
                 print(
                     "Analysing tiffs; tiff {}/{}   Time elapsed: {:.2f} minutes".format(
