@@ -247,8 +247,8 @@ class DAB:
                     yc = pl.Series(
                         "centroid-y", table_asyn_temp["centroid-1"].to_numpy() + ypos
                     )
-                    table_asyn_temp = table_asyn_temp.replace_column(0, xc)
-                    table_asyn_temp = table_asyn_temp.replace_column(1, yc)
+                    table_asyn_temp = table_asyn_temp.replace_column(1, xc)
+                    table_asyn_temp = table_asyn_temp.replace_column(2, yc)
 
                     xnc = pl.Series(
                         "centroid-x", table_nuclei_temp["centroid-0"].to_numpy() + xpos
@@ -256,8 +256,8 @@ class DAB:
                     ync = pl.Series(
                         "centroid-y", table_nuclei_temp["centroid-1"].to_numpy() + ypos
                     )
-                    table_nuclei_temp = table_nuclei_temp.replace_column(0, xnc)
-                    table_nuclei_temp = table_nuclei_temp.replace_column(1, ync)
+                    table_nuclei_temp = table_nuclei_temp.replace_column(1, xnc)
+                    table_nuclei_temp = table_nuclei_temp.replace_column(2, ync)
 
                     if save_figs == True:
                         import matplotlib
@@ -579,7 +579,7 @@ class DAB:
 
         props["area"] = np.multiply(props["area"], np.square(pixel_size))
         props["centroid-0"] = np.multiply(props["centroid-0"], pixel_size)
-        props["centroid-0"] = np.multiply(props["centroid-0"], pixel_size)
+        props["centroid-1"] = np.multiply(props["centroid-1"], pixel_size)
         props["axis_major_length"] = np.multiply(props["axis_major_length"], pixel_size)
         props["axis_minor_length"] = np.multiply(props["axis_minor_length"], pixel_size)
         return props
