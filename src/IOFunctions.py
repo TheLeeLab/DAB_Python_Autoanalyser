@@ -156,43 +156,45 @@ class IO_Functions:
                         new_image_path = os.path.join(
                             temp_directory, f"image_{x_cor}_{y_cor}.tiff"
                         )
-                        img_pil = Image.fromarray(img, mode="RGB")
-                        tags_tosave = copy(self.example_tags)
-                        tags_tosave[296] = 3
-                        tags_tosave[282] = 1e-3 / pixel_size
-                        tags_tosave[283] = 1e-3 / pixel_size
-                        tags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
-                        tags_tosave[256] = img_pil.width
-                        tags_tosave[257] = img_pil.height
-                        tags_tosave[278] = img_pil.height
-                        tags_tosave[279] = img_pil.height * img_pil.width * 3
-                        img_pil.save(
-                            new_image_path, format="TIFF", tiffinfo=tags_tosave
-                        )
+                        if not os.path.isfile(new_image_path):
+                            img_pil = Image.fromarray(img, mode="RGB")
+                            tags_tosave = copy(self.example_tags)
+                            tags_tosave[296] = 3
+                            tags_tosave[282] = 1e-3 / pixel_size
+                            tags_tosave[283] = 1e-3 / pixel_size
+                            tags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
+                            tags_tosave[256] = img_pil.width
+                            tags_tosave[257] = img_pil.height
+                            tags_tosave[278] = img_pil.height
+                            tags_tosave[279] = img_pil.height * img_pil.width * 3
+                            img_pil.save(
+                                new_image_path, format="TIFF", tiffinfo=tags_tosave
+                            )
 
                         mask_image_path = os.path.join(
                             temp_directory, f"image_mask_{x_cor}_{y_cor}.tiff"
                         )
-                        mask_pil = Image.fromarray(mask_total)
-                        masktags_tosave = copy(self.example_tags)
-                        masktags_tosave[296] = 3
-                        del masktags_tosave[258]
-                        masktags_tosave[259] = 1
-                        masktags_tosave[262] = 1
-                        del masktags_tosave[273]
-                        del masktags_tosave[50838]
-                        del masktags_tosave[50839]
-                        masktags_tosave[282] = 1e-3 / pixel_size
-                        masktags_tosave[283] = 1e-3 / pixel_size
-                        masktags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
-                        masktags_tosave[277] = 1
-                        del masktags_tosave[256]
-                        del masktags_tosave[257]
-                        del masktags_tosave[278]
-                        del masktags_tosave[279]
-                        mask_pil.save(
-                            mask_image_path, format="TIFF", tiffinfo=masktags_tosave
-                        )
+                        if not os.path.isfile(mask_image_path):
+                            mask_pil = Image.fromarray(mask_total)
+                            masktags_tosave = copy(self.example_tags)
+                            masktags_tosave[296] = 3
+                            del masktags_tosave[258]
+                            masktags_tosave[259] = 1
+                            masktags_tosave[262] = 1
+                            del masktags_tosave[273]
+                            del masktags_tosave[50838]
+                            del masktags_tosave[50839]
+                            masktags_tosave[282] = 1e-3 / pixel_size
+                            masktags_tosave[283] = 1e-3 / pixel_size
+                            masktags_tosave[270] = "Python=3.10.12f\nunit=micron\n"
+                            masktags_tosave[277] = 1
+                            del masktags_tosave[256]
+                            del masktags_tosave[257]
+                            del masktags_tosave[278]
+                            del masktags_tosave[279]
+                            mask_pil.save(
+                                mask_image_path, format="TIFF", tiffinfo=masktags_tosave
+                            )
                     l += 1
                     print(
                         "Chopping DAB into tiff sections;  subsection {}/{}   Time elapsed: {:.2f} seconds".format(
