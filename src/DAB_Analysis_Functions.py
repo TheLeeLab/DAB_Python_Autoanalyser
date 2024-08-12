@@ -264,14 +264,14 @@ class DAB:
                             os.path.join(fig_folder, figname), format="svg", dpi=600
                         )
 
-                    if isinstance(table_asyn_temp, list):
+                    if isinstance(table_asyn, list):
                         table_asyn = table_asyn_temp
                     else:
                         table_asyn = pl.concat(
                             [table_asyn, table_asyn_temp], rechunk=True
                         )
 
-                    if isinstance(table_nuclei_temp, list):
+                    if isinstance(table_nuclei, list):
                         table_nuclei = table_nuclei_temp
                     else:
                         if len(table_nuclei_temp) > 0:
