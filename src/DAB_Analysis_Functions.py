@@ -172,7 +172,7 @@ class DAB:
             del thresh_asyn_variance
             del thresh_nuclei_variance
             del random_tiffs
-            
+
             to_save = {"thresh_protein": thresh_asyn, "thresh_nuclei": thresh_nuclei}
             with open(
                 os.path.join(folder, slice_name + "_thresholds.json"),
@@ -184,7 +184,7 @@ class DAB:
             pixel_size_um = pixel_size * 1e6
 
             start = time.time()
-            
+
             table_asyn = []
             table_nuclei = []
 
@@ -230,7 +230,7 @@ class DAB:
                     )
                     table_asyn_temp = table_asyn_temp.replace_column(0, xc)
                     table_asyn_temp = table_asyn_temp.replace_column(1, yc)
-    
+
                     xnc = pl.Series(
                         "centroid-x", table_nuclei_temp["centroid-0"].to_numpy() + xpos
                     )
@@ -239,10 +239,10 @@ class DAB:
                     )
                     table_nuclei_temp = table_nuclei_temp.replace_column(0, xnc)
                     table_nuclei_temp = table_nuclei_temp.replace_column(1, ync)
-    
+
                     if save_figs == True:
                         import matplotlib
-    
+
                         matplotlib.use("Agg")
                         fig, axs = self.plot_masks(
                             IO.imread(tiffs[i]),
@@ -263,12 +263,14 @@ class DAB:
                         plt.savefig(
                             os.path.join(fig_folder, figname), format="svg", dpi=600
                         )
-    
+
                     if isinstance(table_asyn_temp, list):
                         table_asyn = table_asyn_temp
                     else:
-                        table_asyn = pl.concat([table_asyn, table_asyn_temp], rechunk=True)
-                    
+                        table_asyn = pl.concat(
+                            [table_asyn, table_asyn_temp], rechunk=True
+                        )
+
                     if isinstance(table_nuclei_temp, list):
                         table_nuclei = table_nuclei_temp
                     else:
