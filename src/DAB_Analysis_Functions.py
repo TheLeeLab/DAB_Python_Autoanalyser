@@ -187,7 +187,7 @@ class DAB:
 
             table_asyn = []
             table_nuclei = []
-            
+
             savename_asyn = os.path.join(
                 folder,
                 slice_name
