@@ -187,6 +187,25 @@ class DAB:
 
             table_asyn = []
             table_nuclei = []
+            
+            savename_asyn = os.path.join(
+                folder,
+                slice_name
+                + "_pixel_size_"
+                + str(pixel_size).replace(".", "p")
+                + "_NA_"
+                + str(NA).replace(".", "p")
+                + "_protein_stain_analysis.csv",
+            )
+            savename_nuclei = os.path.join(
+                folder,
+                slice_name
+                + "_pixel_size_"
+                + str(pixel_size).replace(".", "p")
+                + "_NA_"
+                + str(NA).replace(".", "p")
+                + "_nuclei_stain_analysis.csv",
+            )
 
             for i in np.arange(len(tiffs)):
                 data_toanalyse = IO.imread(tiffs[i])
@@ -292,24 +311,6 @@ class DAB:
                 ws * 100,
                 end="\r",
                 flush=True,
-            )
-            savename_asyn = os.path.join(
-                folder,
-                slice_name
-                + "_pixel_size_"
-                + str(pixel_size).replace(".", "p")
-                + "_NA_"
-                + str(NA).replace(".", "p")
-                + "_protein_stain_analysis.csv",
-            )
-            savename_nuclei = os.path.join(
-                folder,
-                slice_name
-                + "_pixel_size_"
-                + str(pixel_size).replace(".", "p")
-                + "_NA_"
-                + str(NA).replace(".", "p")
-                + "_nuclei_stain_analysis.csv",
             )
             table_asyn.write_csv(savename_asyn)
             table_nuclei.write_csv(savename_nuclei)
