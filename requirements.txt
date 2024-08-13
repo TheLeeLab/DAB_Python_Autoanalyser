@@ -111,6 +111,7 @@ scikit-image==0.22.0
 scipy==1.13.0
 seaborn==0.13.2
 Send2Trash==1.8.2
+setuptools==72.2.0
 shapely==2.0.5
 six==1.16.0
 slideio==2.6.0
@@ -143,5 +144,4 @@ wcwidth==0.2.13
 webcolors==1.13
 webencodings==0.5.1
 websocket-client==1.7.0
-xmltodict==0.13.0
 yarg==0.1.9
