@@ -544,7 +544,7 @@ class DAB:
         Returns:
             mask (np.2darray): single boolean image
             thresh (float): single boolean mask image"""
-        
+
         thresh = threshold_yen(image)
         mask = image <= thresh
         return mask, thresh
