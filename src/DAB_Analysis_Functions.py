@@ -544,7 +544,7 @@ class DAB:
         Returns:
             mask (np.2darray): single boolean image
             thresh (float): single boolean mask image"""
-
+        
         thresh = threshold_yen(image)
         mask = image <= thresh
         return mask, thresh
@@ -819,14 +819,15 @@ class DAB:
         bin_blur[bin_blur > 0] = 1
         bin_blur = np.asarray(bin_blur, dtype=bool)
 
-        if len(mask) > 0:
-            image_mask_asyn = self.clean_protein_mask(
-                image_mask_asyn_raw, mask, pixel_size=pixel_size, NA=NA
-            )
-        else:
-            image_mask_asyn = self.clean_protein_mask(
-                image_mask_asyn_raw, pixel_size=pixel_size, NA=NA
-            )
+        if justthresh != True:
+            if len(mask) > 0:
+                image_mask_asyn = self.clean_protein_mask(
+                    image_mask_asyn_raw, mask, pixel_size=pixel_size, NA=NA
+                )
+            else:
+                image_mask_asyn = self.clean_protein_mask(
+                    image_mask_asyn_raw, pixel_size=pixel_size, NA=NA
+                )
 
         data_1 = img[:, :, 0]
         data_2 = img[:, :, 1]
