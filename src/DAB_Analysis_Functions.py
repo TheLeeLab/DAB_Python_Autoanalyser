@@ -913,6 +913,13 @@ class DAB:
                 props_nuclei["axis_major_length"], props_nuclei["axis_minor_length"]
             )
         )
+        
+        table_nuclei = table_nuclei.with_columns(
+            filename=np.full_like(
+                table_nuclei["axis_minor_length"], filename, dtype="object"
+            )
+        )
+
         return (
             image_mask_asyn,
             table_asyn,
