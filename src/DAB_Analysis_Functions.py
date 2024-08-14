@@ -380,7 +380,7 @@ class DAB:
         Returns:
             cleaned_mask (np.2darray): cleaned up mask"""
 
-        d = int(np.around((0.6 / (2 * NA)) / pixel_size))
+        d = int(np.around((wavelength / (2 * NA)) / pixel_size))
         if d < 1:
             d = 1
         return d
