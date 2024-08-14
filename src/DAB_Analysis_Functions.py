@@ -308,6 +308,13 @@ class DAB:
                 flush=True,
             )
             shutil.rmtree(temp_folder)
+            print(
+                "Completed analysis; Time elapsed: {:.2f} minutes".format(
+                    (time.time() - start) / 60,
+                ),
+                end="\r",
+                flush=True,
+            )
         return
 
     def im2double(self, img):
@@ -913,7 +920,7 @@ class DAB:
                 props_nuclei["axis_major_length"], props_nuclei["axis_minor_length"]
             )
         )
-        
+
         table_nuclei = table_nuclei.with_columns(
             filename=np.full_like(
                 table_nuclei["axis_minor_length"], filename, dtype="object"
