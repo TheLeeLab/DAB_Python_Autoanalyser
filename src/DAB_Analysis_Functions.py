@@ -279,6 +279,7 @@ class DAB:
                         plt.savefig(
                             os.path.join(fig_folder, figname), format="svg", dpi=600
                         )
+                        plt.close("all")
 
                     if os.path.isfile(savename_asyn):
                         with open(savename_asyn, mode="a") as f:
