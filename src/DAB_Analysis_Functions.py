@@ -185,9 +185,6 @@ class DAB:
 
             start = time.time()
 
-            table_asyn = []
-            table_nuclei = []
-
             savename_asyn = os.path.join(
                 folder,
                 slice_name
@@ -283,20 +280,17 @@ class DAB:
                             os.path.join(fig_folder, figname), format="svg", dpi=600
                         )
 
-                    if isinstance(table_asyn, list):
-                        table_asyn = table_asyn_temp
+                    if os.path.isfile(savename_asyn):
+                        with open(savename_asyn, mode="a") as f:
+                            table_asyn_temp.write_csv(f, include_header=False)
                     else:
-                        table_asyn = pl.concat(
-                            [table_asyn, table_asyn_temp], rechunk=True
-                        )
+                        table_asyn_temp.write_csv(savename_asyn)
 
-                    if isinstance(table_nuclei, list):
-                        table_nuclei = table_nuclei_temp
+                    if os.path.isfile(savename_nuclei):
+                        with open(savename_nuclei, mode="a") as f:
+                            table_nuclei_temp.write_csv(f, include_header=False)
                     else:
-                        if len(table_nuclei_temp) > 0:
-                            table_nuclei = pl.concat(
-                                [table_nuclei, table_nuclei_temp], rechunk=True
-                            )
+                        table_nuclei_temp.write_csv(savename_nuclei)
 
                 print(
                     "Analysing tiffs; tiff {}/{}   Time elapsed: {:.2f} minutes".format(
@@ -312,9 +306,6 @@ class DAB:
                 end="\r",
                 flush=True,
             )
-            table_asyn.write_csv(savename_asyn)
-            table_nuclei.write_csv(savename_nuclei)
-
             shutil.rmtree(temp_folder)
         return
 
