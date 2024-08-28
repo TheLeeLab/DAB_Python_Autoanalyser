@@ -185,9 +185,6 @@ class DAB:
 
             start = time.time()
 
-            table_asyn = []
-            table_nuclei = []
-
             savename_asyn = os.path.join(
                 folder,
                 slice_name
@@ -282,21 +279,19 @@ class DAB:
                         plt.savefig(
                             os.path.join(fig_folder, figname), format="svg", dpi=600
                         )
+                        plt.close("all")
 
-                    if isinstance(table_asyn, list):
-                        table_asyn = table_asyn_temp
+                    if os.path.isfile(savename_asyn):
+                        with open(savename_asyn, mode="a") as f:
+                            table_asyn_temp.write_csv(f, include_header=False)
                     else:
-                        table_asyn = pl.concat(
-                            [table_asyn, table_asyn_temp], rechunk=True
-                        )
+                        table_asyn_temp.write_csv(savename_asyn)
 
-                    if isinstance(table_nuclei, list):
-                        table_nuclei = table_nuclei_temp
+                    if os.path.isfile(savename_nuclei):
+                        with open(savename_nuclei, mode="a") as f:
+                            table_nuclei_temp.write_csv(f, include_header=False)
                     else:
-                        if len(table_nuclei_temp) > 0:
-                            table_nuclei = pl.concat(
-                                [table_nuclei, table_nuclei_temp], rechunk=True
-                            )
+                        table_nuclei_temp.write_csv(savename_nuclei)
 
                 print(
                     "Analysing tiffs; tiff {}/{}   Time elapsed: {:.2f} minutes".format(
@@ -312,10 +307,14 @@ class DAB:
                 end="\r",
                 flush=True,
             )
-            table_asyn.write_csv(savename_asyn)
-            table_nuclei.write_csv(savename_nuclei)
-
             shutil.rmtree(temp_folder)
+            print(
+                "Completed analysis; Time elapsed: {:.2f} minutes".format(
+                    (time.time() - start) / 60,
+                ),
+                end="\r",
+                flush=True,
+            )
         return
 
     def im2double(self, img):
@@ -380,7 +379,7 @@ class DAB:
         Returns:
             cleaned_mask (np.2darray): cleaned up mask"""
 
-        d = int(np.around((0.6 / (2 * NA)) / pixel_size))
+        d = int(np.around((wavelength / (2 * NA)) / pixel_size))
         if d < 1:
             d = 1
         return d
@@ -819,14 +818,15 @@ class DAB:
         bin_blur[bin_blur > 0] = 1
         bin_blur = np.asarray(bin_blur, dtype=bool)
 
-        if len(mask) > 0:
-            image_mask_asyn = self.clean_protein_mask(
-                image_mask_asyn_raw, mask, pixel_size=pixel_size, NA=NA
-            )
-        else:
-            image_mask_asyn = self.clean_protein_mask(
-                image_mask_asyn_raw, pixel_size=pixel_size, NA=NA
-            )
+        if justthresh != True:
+            if len(mask) > 0:
+                image_mask_asyn = self.clean_protein_mask(
+                    image_mask_asyn_raw, mask, pixel_size=pixel_size, NA=NA
+                )
+            else:
+                image_mask_asyn = self.clean_protein_mask(
+                    image_mask_asyn_raw, pixel_size=pixel_size, NA=NA
+                )
 
         data_1 = img[:, :, 0]
         data_2 = img[:, :, 1]
@@ -920,6 +920,13 @@ class DAB:
                 props_nuclei["axis_major_length"], props_nuclei["axis_minor_length"]
             )
         )
+
+        table_nuclei = table_nuclei.with_columns(
+            filename=np.full_like(
+                table_nuclei["axis_minor_length"], filename, dtype="object"
+            )
+        )
+
         return (
             image_mask_asyn,
             table_asyn,

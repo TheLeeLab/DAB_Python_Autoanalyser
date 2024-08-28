@@ -25,7 +25,7 @@ sys.path.append(module_dir)
 class IO_Functions:
     def __init__(self):
         self = self
-        tiff = Image.open("src/.example.ome.tif")
+        tiff = Image.open(os.path.join("src", ".example.ome.tif"))
         self.example_tags = tiff.tag_v2
         return
 
