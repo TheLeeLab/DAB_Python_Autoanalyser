@@ -1,8 +1,4 @@
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10932778.svg)](https://doi.org/10.5281/zenodo.10932778)
-
-
-
 ## Installation Instructions
 
 The package "DAB_Python_Autoanalyser" (written in support of ongoing work in the Klenerman and Lee labs).
